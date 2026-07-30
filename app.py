@@ -1,87 +1,199 @@
 import streamlit as st
 import google.generativeai as genai
 
-st.set_page_config(page_title="AI Quality & CAPA Assistant", layout="wide")
+st.set_page_config(
+    page_title="AI Quality & CAPA Assistant",
+    layout="wide"
+)
 
-# Side bar mein API Key dalne ka option (Safe Tareeqa)
+# ---------------- Sidebar ---------------- #
+
 st.sidebar.title("🔑 AI Brain Setup")
-api_key = st.sidebar.text_input("Apni Gemini API Key yahan paste karein:", type="password")
-st.sidebar.info("Free API key lene ke liye [Google AI Studio](https://aistudio.google.com/app/apikey) par jayein.")
+
+api_key = st.sidebar.text_input(
+    "Apni Gemini API Key yahan paste karein:",
+    type="password"
+)
+
+st.sidebar.info(
+    "Free API Key:\nhttps://aistudio.google.com/app/apikey"
+)
+
+# ---------------- Main Title ---------------- #
 
 st.title("🛠️ AI Quality Management & CAPA Assistant")
-st.write("Professional CAPA aur AI-Powered Quality Q&A Assistant.")
+st.write("Professional CAPA Generator + AI Quality Expert")
 
-tab1, tab2 = st.tabs(["📋 Complaint & CAPA Generator", "🤖 AI Quality Q&A Assistant"])
+tab1, tab2 = st.tabs([
+    "📋 Complaint & CAPA Generator",
+    "🤖 AI Quality Assistant"
+])
 
-# --- TAB 1: CAPA GENERATOR (Standard Format) ---
+# ======================================================
+# TAB 1
+# ======================================================
+
 with tab1:
-    st.header("Customer Complaint to Advanced CAPA Generator")
-    uploaded_file = st.file_uploader("📸 Defect ki photo upload karein (Optional)", type=["jpg", "png", "jpeg"])
-    
-    customer_name = st.text_input("Customer Name / Company")
-    product_name = st.text_input("Product / Part Name / Part Code")
-    defect_desc = st.text_area("Defect / Problem Description (Detail mein likhein)")
-    
-    if st.button("Generate Professional CAPA"):
-        if defect_desc.strip() == "":
-            st.warning("Kripya pehle defect description darj karein!")
-        else:
-            with st.spinner("Advanced CAPA taiyar ho raha hai..."):
-                st.success("Professional CAPA Generated Successfully!")
-                
-                if uploaded_file is not None:
-                    st.image(uploaded_file, caption="Defect ki Image", use_container_width=True)
-                
-                st.markdown("### 🚨 1. Immediate Outflow / Containment Action")
-                st.write(f"- *Stock Quarantine:* {customer_name} ke is batch ke saare products ka dispatch turant rokein.\n- *Line Inspection:* Line ko turant rok kar 100% sorting karwayein.")
-                
-                st.markdown("### 🦴 2. Root Cause Analysis (Fishbone - 4M1E)")
-                st.write("- *Man:* Operator ki training ka abhav.\n- *Machine:* Tool wear/tear ya calibration error.\n- *Material:* Raw material variation.\n- *Method:* SOP deviation.\n- *Environment:* Temperature/Humidity impact.")
-                
-                st.markdown("### ⚡ 3. Corrective Action (Permanent Fix)")
-                st.write(f"1. Defective parts ({product_name}) ko rework ya scrap karein.\n2. Machine ke component ko recalibrate karein.")
-                
-                st.markdown("### 🛡️ 4. Preventive Action (Future Proofing)")
-                st.write("1. Poka-Yoke implement karein.\n2. SOP ko update karke retraining karwayein.")
 
-# --- TAB 2: AI QUALITY ASSISTANT (Powered by Gemini) ---
-with tab2:
-    st.header("🤖 AI Quality & Manufacturing Q&A Assistant")
-    st.write("Quality standards (5S, ISO, Welding, Poka-Yoke) ya kisi bhi defect ke baare mein sawal puchein. AI apko expert jawab dega.")
-    
-    user_query = st.text_input("Apna sawal yahan type karein:")
-    
-    if st.button("Get Expert Answer"):
-        if user_query.strip() == "":
-            st.warning("Kripya koi sawal puchein!")
-        elif not api_key:
-            st.error("⚠️ Kripya pehle left side bar (menu) mein apni Gemini API Key paste karein!")
+    st.header("Customer Complaint → Professional CAPA")
+
+    uploaded_file = st.file_uploader(
+        "Upload Defect Image (Optional)",
+        type=["jpg", "jpeg", "png"]
+    )
+
+    customer_name = st.text_input("Customer Name")
+
+    product_name = st.text_input("Product / Part Name")
+
+    defect_desc = st.text_area("Defect Description")
+
+    if st.button("Generate Professional CAPA"):
+
+        if defect_desc.strip() == "":
+            st.warning("Please enter defect description.")
         else:
-            with st.spinner("Gemini AI jawab soch raha hai..."):
-                try:
-                    # AI ko set karna
-                    genai.configure(api_key=api_key)
-                    
-                    # 💡 SMART AUTO-DETECTION: Jo model available hoga, wo khud chun lega
-                    available_models = []
-                    for m in genai.list_models():
-                        if 'generateContent' in m.supported_generation_methods:
-                            available_models.append(m.name)
-                    
-                    if not available_models:
-                        st.error("⚠️ Aapki API key ke liye koi valid model nahi mila. Kripya nayi key generate karein.")
-                    else:
-                        # Sabse pehla available aur valid model select karega
-                        best_model = available_models[0]
-                        model = genai.GenerativeModel(best_model)
-                        
-                        # AI ko batana ki use ek Quality Engineer ki tarah sochna hai
-                        prompt = f"Tum ek expert Quality Assurance and Manufacturing Engineer ho. Is sawal ka jawab technical aur professional tareeqe se do: {user_query}"
-                        
-                        # AI se jawab lena
-                        response = model.generate_content(prompt)
-                        
-                        st.success(f"🤖 AI Expert Jawab:")
-                        st.write(response.text)
-                except Exception as e:
-                    st.error(f"Error: {e}")
+
+            st.success("Professional CAPA Generated")
+
+            if uploaded_file:
+                st.image(uploaded_file)
+
+            st.markdown("## 🚨 1. Immediate Containment Action")
+
+            st.write(
+                f"""
+- Stop dispatch of affected stock.
+- Quarantine all inventory related to *{customer_name}*.
+- Perform 100% inspection.
+- Inform production and quality team immediately.
+"""
+            )
+
+            st.markdown("## 🦴 2. Root Cause Analysis (4M1E)")
+
+            st.write("""
+*Man*
+- Operator training issue
+
+*Machine*
+- Tool wear / Machine calibration
+
+*Material*
+- Raw material variation
+
+*Method*
+- SOP not followed
+
+*Environment*
+- Temperature / Humidity variation
+""")
+
+            st.markdown("## ⚡ 3. Corrective Action")
+
+            st.write(
+                f"""
+- Repair/Rework defective *{product_name}*.
+- Recalibrate machine.
+- Replace worn tooling.
+"""
+            )
+
+            st.markdown("## 🛡️ 4. Preventive Action")
+
+            st.write("""
+- Update SOP
+- Operator Retraining
+- Poka-Yoke Implementation
+- Layered Process Audit
+- SPC Monitoring
+""")
+
+# ======================================================
+# TAB 2
+# ======================================================
+
+with tab2:
+
+    st.header("🤖 AI Quality Expert")
+
+    user_query = st.text_area(
+        "Ask anything about Quality, CAPA, Welding, 8D, ISO, SPC, MSA etc."
+    )
+
+    if st.button("Get Expert Answer"):
+
+        if user_query.strip() == "":
+            st.warning("Please enter your question.")
+
+        elif not api_key:
+            st.error("Please enter Gemini API Key first.")
+
+        else:
+
+            try:
+
+                genai.configure(api_key=api_key)
+
+                # ---------------- Find Available Gemini Models ---------------- #
+
+                models = []
+
+                for m in genai.list_models():
+
+                    if "generateContent" in m.supported_generation_methods:
+
+                        if "gemini" in m.name.lower():
+
+                            models.append(m.name)
+
+                if len(models) == 0:
+                    st.error("No supported Gemini model found.")
+                    st.stop()
+
+                # Prefer Flash Model
+
+                best_model = None
+
+                priority = [
+                    "gemini-2.5-flash",
+                    "gemini-2.0-flash",
+                    "gemini-1.5-flash"
+                ]
+
+                for p in priority:
+                    for m in models:
+                        if p in m.lower():
+                            best_model = m
+                            break
+                    if best_model:
+                        break
+
+                if best_model is None:
+                    best_model = models[0]
+
+                st.success(f"Connected Model : {best_model}")
+
+                model = genai.GenerativeModel(best_model)
+
+                prompt = f"""
+You are an Expert Quality Assurance Engineer.
+
+Provide detailed professional answer.
+
+Question:
+
+{user_query}
+"""
+
+                with st.spinner("AI is thinking..."):
+
+                    response = model.generate_content(prompt)
+
+                st.markdown("## 🤖 Expert Answer")
+
+                st.write(response.text)
+
+            except Exception as e:
+
+                st.error(str(e))
