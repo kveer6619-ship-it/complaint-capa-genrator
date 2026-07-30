@@ -61,7 +61,9 @@ with tab2:
                 try:
                     # AI ko set karna
                     genai.configure(api_key=api_key)
-                    model = genai.GenerativeModel('gemini-1.5-flash')
+                    
+                    # YAHAN CHANGE KIYA GAYA HAI: gemini-pro lagaya gaya hai
+                    model = genai.GenerativeModel('gemini-pro')
                     
                     # AI ko batana ki use ek Quality Engineer ki tarah sochna hai
                     prompt = f"Tum ek expert Quality Assurance and Manufacturing Engineer ho. Is sawal ka jawab technical aur professional tareeqe se do: {user_query}"
@@ -72,4 +74,4 @@ with tab2:
                     st.success("🤖 AI Expert Jawab:")
                     st.write(response.text)
                 except Exception as e:
-                    st.error(f"Error: API Key sahi nahi hai ya system mein koi dikkat hai. ({e})")
+                    st.error(f"Error: {e}")
