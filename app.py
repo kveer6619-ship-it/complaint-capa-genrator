@@ -43,7 +43,7 @@ with tab1:
                 st.markdown("### 🛡️ 4. Preventive Action (Future Proofing)")
                 st.write("1. Poka-Yoke implement karein.\n2. SOP ko update karke retraining karwayein.")
 
-# --- TAB 2: AI QUALITY ASSISTANT (Powered by Smart Auto-Detection) ---
+# --- TAB 2: AI QUALITY ASSISTANT (Powered by Smart Auto-Detection V2) ---
 with tab2:
     st.header("🤖 AI Quality & Manufacturing Q&A Assistant")
     st.write("Quality standards ya kisi bhi defect ke baare mein sawal puchein.")
@@ -61,12 +61,14 @@ with tab2:
                     # AI ko set karna
                     genai.configure(api_key=api_key)
                     
-                    # SMART SCANNER: Jo model available hoga, wo khud dhoondhega
+                    # SMART SCANNER V2: Google ke restricted models ko ignore karna
                     valid_model = None
                     for m in genai.list_models():
                         if 'generateContent' in m.supported_generation_methods:
-                            valid_model = m.name
-                            break # Pehla sahi model milte hi ruk jayega
+                            # 2.5 wale model ko chhod kar agla valid model chunega
+                            if '2.5' not in m.name:
+                                valid_model = m.name
+                                break
                     
                     if valid_model:
                         model = genai.GenerativeModel(valid_model)
