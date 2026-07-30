@@ -62,16 +62,26 @@ with tab2:
                     # AI ko set karna
                     genai.configure(api_key=api_key)
                     
-                    # YAHAN CHANGE KIYA GAYA HAI: gemini-pro lagaya gaya hai
-                    model = genai.GenerativeModel('gemini-pro')
+                    # 💡 SMART AUTO-DETECTION: Jo model available hoga, wo khud chun lega
+                    available_models = []
+                    for m in genai.list_models():
+                        if 'generateContent' in m.supported_generation_methods:
+                            available_models.append(m.name)
                     
-                    # AI ko batana ki use ek Quality Engineer ki tarah sochna hai
-                    prompt = f"Tum ek expert Quality Assurance and Manufacturing Engineer ho. Is sawal ka jawab technical aur professional tareeqe se do: {user_query}"
-                    
-                    # AI se jawab lena
-                    response = model.generate_content(prompt)
-                    
-                    st.success("🤖 AI Expert Jawab:")
-                    st.write(response.text)
+                    if not available_models:
+                        st.error("⚠️ Aapki API key ke liye koi valid model nahi mila. Kripya nayi key generate karein.")
+                    else:
+                        # Sabse pehla available aur valid model select karega
+                        best_model = available_models[0]
+                        model = genai.GenerativeModel(best_model)
+                        
+                        # AI ko batana ki use ek Quality Engineer ki tarah sochna hai
+                        prompt = f"Tum ek expert Quality Assurance and Manufacturing Engineer ho. Is sawal ka jawab technical aur professional tareeqe se do: {user_query}"
+                        
+                        # AI se jawab lena
+                        response = model.generate_content(prompt)
+                        
+                        st.success(f"🤖 AI Expert Jawab:")
+                        st.write(response.text)
                 except Exception as e:
                     st.error(f"Error: {e}")
