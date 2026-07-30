@@ -9,7 +9,10 @@ tab1, tab2 = st.tabs(["📋 Complaint & CAPA Generator", "🤖 Quality Q&A Assis
 
 with tab1:
     st.header("Customer Complaint to Advanced CAPA Generator")
-    st.write("Defect description daalein aur Outflow, CAPA, aur Fishbone analysis prapt karein.")
+    st.write("Defect description daalein aur photo upload karein.")
+    
+    # NAYA FEATURE: Photo Upload
+    uploaded_file = st.file_uploader("📸 Defect ki photo upload karein (Optional)", type=["jpg", "png", "jpeg"])
     
     customer_name = st.text_input("Customer Name / Company")
     product_name = st.text_input("Product / Part Name / Part Code")
@@ -22,42 +25,49 @@ with tab1:
             with st.spinner("Advanced CAPA aur Fishbone Analysis taiyar ho raha hai..."):
                 st.success("Professional CAPA Generated Successfully!")
                 
+                # Agar photo upload ki gayi hai toh yahan dikhayega
+                if uploaded_file is not None:
+                    st.image(uploaded_file, caption="Defect ki Image", use_container_width=True)
+                
+                # Download ke liye Report ka Data taiyar karna
+                report_content = f"--- CAPA REPORT ---\n\nCustomer: {customer_name}\nProduct: {product_name}\nDefect Description: {defect_desc}\n\n"
+                
                 # 1. Immediate Outflow Action
                 st.markdown("### 🚨 1. Immediate Outflow / Containment Action")
-                st.write(f"- *Stock Quarantine:* {customer_name} ya warehouse mein available is batch/lot ke saare products ka dispatch turant rokein aur stock ko quarantine area mein move karein.")
-                st.write("- *Line Inspection:* Agar production line par ye issue active hai, toh line ko turant rok kar 100% sorting karwayein.")
+                outflow_text = f"- Stock Quarantine: {customer_name} ya warehouse mein available is batch/lot ke saare products ka dispatch turant rokein.\n- Line Inspection: Agar production line par ye issue active hai, toh line ko turant rok kar 100% sorting karwayein."
+                st.write(outflow_text)
+                report_content += "1. IMMEDIATE OUTFLOW ACTION\n" + outflow_text + "\n\n"
                 
-                # 2. Root Cause Analysis & Fishbone (4M1E)
-                st.markdown("### 🦴 2. Root Cause Analysis (Fishbone / Ishikawa Diagram - 4M1E)")
-                st.write("Defect ke mukhya karan in categories ke antargat analysis kiye gaye hain:")
-                
-                st.markdown("""
-                * *👨‍🔧 Man (Operator):* 
-                  * Operator ki proper training ka abhav ya shift change ke dauran communication gap.
-                * *⚙️ Machine (Equipment):* 
-                  * Tool wear and tear, machine calibration mein error, ya sensor ki kharabi.
-                * *📦 Material (Raw Material):* 
-                  * Raw material ki property mein variation ya supplier ki taraf se sub-standard batch.
-                * *📋 Method (Process):* 
-                  * SOP (Standard Operating Procedure) ka theek se palan na hona ya parameters mein deviation.
-                * *🌡️ Environment:* 
-                  * Shop floor par temperature, humidity ya lighting ka asar.
-                """)
+                # 2. Root Cause Analysis (Fishbone)
+                st.markdown("### 🦴 2. Root Cause Analysis (Fishbone / Ishikawa - 4M1E)")
+                st.write("- *Man:* Operator ki training ka abhav.\n- *Machine:* Tool wear/tear ya calibration error.\n- *Material:* Raw material variation.\n- *Method:* SOP deviation.\n- *Environment:* Temperature/Humidity impact.")
+                fishbone_text = "Man: Operator training abhav.\nMachine: Tool wear/tear ya calibration error.\nMaterial: Raw material variation.\nMethod: SOP deviation.\nEnvironment: Temperature/Humidity impact."
+                report_content += "2. ROOT CAUSE ANALYSIS (4M1E)\n" + fishbone_text + "\n\n"
                 
                 # 3. Corrective Action
                 st.markdown("### ⚡ 3. Corrective Action (Permanent Fix)")
-                st.write(f"1. Defective parts ({product_name}) ko rework ya scrap karein.")
-                st.write("2. Machine ke us specific component ko replace ya recalibrate karein jisse defect utpann hua.")
+                ca_text = f"1. Defective parts ({product_name}) ko rework ya scrap karein.\n2. Machine ke component ko replace ya recalibrate karein."
+                st.write(ca_text)
+                report_content += "3. CORRECTIVE ACTION\n" + ca_text + "\n\n"
                 
                 # 4. Preventive Action
                 st.markdown("### 🛡️ 4. Preventive Action (Future Proofing)")
-                st.write("1. Poka-Yoke (Error-proofing) mechanism implement karein taaki operator dobara ye galti na kar sake.")
-                st.write("2. SOP ko update karke sabhi operators ki retraining karwayi jaye.")
+                pa_text = "1. Poka-Yoke implement karein.\n2. SOP ko update karke retraining karwayein."
+                st.write(pa_text)
+                report_content += "4. PREVENTIVE ACTION\n" + pa_text + "\n\n"
+                
+                st.markdown("---")
+                
+                # NAYA FEATURE: Download Button
+                st.download_button(
+                    label="📥 Download CAPA Report (Text File)",
+                    data=report_content,
+                    file_name=f"CAPA_Report_{customer_name}.txt",
+                    mime="text/plain"
+                )
 
 with tab2:
     st.header("Quality & Manufacturing Q&A Assistant")
-    st.write("Quality standards aur manufacturing se juda koi bhi sawal puchein.")
-    
     user_query = st.text_input("Apna sawal yahan type karein:")
     
     if st.button("Get Answer"):
